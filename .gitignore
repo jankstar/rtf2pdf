@@ -2,13 +2,12 @@
 /node_modules
 /package-lock.json
 /data
-/.DS_Store
+.DS_Store
 /static/avatare
 launch.json
 .vscode
 .deplyment
 /temp
 .deplyment
-*.json
 *.PDF
 *.pdf
