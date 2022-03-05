@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>rtf2pdf Module</h1>
+<p>This module provides the following functions:</p>
+<h2>1. Documents</h2>
+<p>Management of documents in a class, with the following attributes:</p>
+<pre class="prettyprint source"><code>{id, date, subject, status, task, in_use, filename, file_extension, type, template, data, info, metadata, cathegory[String], langu, num_page, body, base64, protocol[String] }
+</code></pre>
+<p>langu - the ISO notation of the language, e.g. 'de-DE' or 'en-UK'.</p>
+<h3>1.1 new Dokument()</h3>
+<p>Define a new document as a PDF; the filename references a file:</p>
+<pre class="prettyprint source"><code>    //Create a PDF document
+    let lDoc4 = new Document({ subject: &quot;test PDF to Text&quot;, type: &quot;PDF&quot;, filename: &quot;test/Rechnung1.PDF&quot;, langu: 'de-DE' })
+</code></pre>
+<h3>1.2 checkIn() / checkOut()</h3>
+<p>The file is converted to base64 - the parameter controls whether the file is not deleted.
+&quot;checkIn()&quot; deletes the local file if necessary and creates a base64 element in the documnet. Now the document can be transferred e.g. via service or saved as Json.</p>
+<pre class="prettyprint source"><code>    lDoc4.checkIn(true);
+</code></pre>
+<p>The &quot;checkOut()&quot; again creates a local file from the base64.</p>
+<p>local file --&gt; &quot;checkIn()&quot; --&gt; base64 --&gt; &quot;checkOut()&quot; --&gt; local file</p>
+<h3>1.3 newTemplateByFile</h3>
+<p>A template is an RTF document and can be created from an RTF file.
+The template is stored in an internal memory.</p>
+<pre class="prettyprint source"><code>    //Regsitrate new RTF template by file
+    let lDoc1 = rtf2pdf.newTemplateByFile('test', 'test/Brief1.rtf');
+    if (lDoc1 && lDoc1.filename) {
+        console.log(`\nRTF Template file ${lDoc1.filename} found.`)
+    } else {
+        if (lDoc1) {
+            console.log(lDoc1.protocol)
+        } else {
+            console.log(`RTF Template document not found.`)
+        }
+    }
+</code></pre>
+<h3>1.4 createDocAsCorrespondence</h3>
+<p>Correspondences can then be created with the template. For this purpose, the data that is to be replaced in the variables of the template is provided.</p>
+<pre class="prettyprint source"><code>    //Create a correspondence as a new document for an RTF template 
+    let lDoc2 = await rtf2pdf.createDocAsCorrespondence('de-DE', 'test',
+        {
+            &quot;name&quot;: {
+                &quot;vorname&quot;: &quot;Hans-Joachim&quot;,
+                &quot;nachname&quot;: &quot;Lüdenscheid&quot;,
+                &quot;strasse&quot;: &quot;An der großen Brücke&quot;,
+                &quot;hnr&quot;: &quot;192a&quot;,
+                &quot;telnr&quot;: &quot;+49 151 99886677&quot;,
+                &quot;email&quot;: &quot;hjo.luedie@mac.com&quot;
+            },
+            &quot;to&quot;: {
+                &quot;titel&quot;: &quot;Herr&quot;,
+                &quot;name1&quot;: &quot;Hans Müller&quot;,
+                &quot;strasse&quot;: &quot;Unter den Eichen&quot;,
+                &quot;hnr&quot;: &quot;142&quot;,
+                &quot;plz&quot;: &quot;14163&quot;,
+                &quot;ort&quot;: &quot;Berlin&quot;,
+                &quot;anrede&quot;: &quot;Sehr geehrter Herr Müller&quot;
+            },
+            &quot;leistung&quot;: [
+                { &quot;nr&quot;: 100, &quot;bezeichnung&quot;: &quot;Haselnüsse&quot;, &quot;preis&quot;: 4.50 },
+                { &quot;nr&quot;: 101, &quot;bezeichnung&quot;: &quot;Sonderzeichen €¢¥£µ©®§&quot;, &quot;preis&quot;: 6.75 }
+            ],
+            &quot;auftrag&quot;: {
+                &quot;datum&quot;: new Date()
+            }
+        }
+    )
+</code></pre>
+<h3>1.5 Variablen im RTF Template</h3>
+<p>The variables in the RTF template must have the following notation:</p>
+<h3>Fields</h3>
+<p>:#field:<Variable>:<Format>#:</p>
+<h3>Tables (Array)</h3>
+<p>:#array:<Variable>:<Format>#:</p>
+<p>with <Variable> the Json notation of the variable e.g. for the surname of the data structure &quot;name.nachname&quot; and for date.
+or numeric fields with the format options of the function &quot; toLocaleString()&quot;, e.g.
+Date - {&quot;weekday&quot;: &quot;long&quot;, &quot;year&quot;: &quot;numeric&quot;, &quot;month&quot;: &quot;long&quot;, &quot;day&quot;: &quot;numeric&quot;} generates e.g. &quot;Freitag, 04 Ferbuar 2022&quot; for &quot;de-DE&quot;.
+Number - {&quot;style&quot;: &quot;currency&quot;, &quot;currency&quot;: &quot;EUR&quot;} generates e.g. &quot;123,00 €&quot;.</p>
+<pre class="prettyprint source"><code>:#field:name.nachname:#:
+:#field:name.strasse:#:
+:#field:auftrag.datum:&quot;weekday&quot;: &quot;long&quot;, &quot;year&quot;: &quot;numeric&quot;, &quot;month&quot;: &quot;long&quot;, &quot;day&quot;: &quot;numeric&quot;:#:
+:#array:leistung.nr:#:
+:#array:leistung.preis:&quot;style&quot;: &quot;currency&quot;, &quot;currency&quot;: &quot;EUR&quot; :#:
+</code></pre>
+<h3>Restrictions for the variables</h3>
+<ol>
+<li>Use only lower case letters without umlauts for the variable names.</li>
+<li>When inserting into RTF (or MS Word -&gt; RTF), copy as pure ASCII or enter one after the other so that no control characters get between the characters and the variable cannot otherwise be recognised/parsed.</li>
+<li>The table (array) is only recognised and processed at the top level.</li>
+</ol>
+<p>In case of an error, check the spelling of the variable, delete it completely if necessary and insert it again.</p>
+<h2>2. Template and correspondences</h2>
+<ul>
+<li>Save RTF template as documents in memory</li>
+<li>create an RTF correspondence from a template and data (Json)</li>
+<li>create a PDF from an RTF file (via OpenOffice as a batch)</li>
+</ul>
+<h2>3. PDF Dateien</h2>
+<ul>
+<li>extract the text from a PDF
+-- if the PDF contains text, this text will be extracted directly.
+-- if the PDF is a scanned text, the JPG of each page will be
+extracted, converted to a TIFF (via ghostscript as a batch) and then
+then converted to text via Tesseract OCR</li>
+<li>convert the file from/to base64</li>
+</ul>
+<h2>4. Requirement</h2>
+<h3>4.1 Ghostscript</h3>
+<p>Extraction of the pages from the PDF as JPG files</p>
+<pre class="prettyprint source"><code>apt-get -y update; apt-get -y install ghostscript
+</code></pre>
+<h3>4.2 Tesseract OCR</h3>
+<p>Tesseract will generate OCR text from the JPG pages of the PDF.
+The installation for e.g. language German:</p>
+<pre class="prettyprint source"><code>apt-get -y update; apt-get -y install tesseract-ocr; apt-get -y install tesseract-ocr-deu
+</code></pre>
+<h3>4.3 OpenOffice</h3>
+<p>OpenOffice is used to create a PDF from an RFT file.
+The installation for e.g. language German:</p>
+<pre class="prettyprint source"><code>apt-get -y update; apt-get -y install libreoffice libreoffice-l10n-de libreoffice-help-de
+</code></pre>
+<h3>4.4 checkInstallation()</h3>
+<p>Checks whether the applications are installed on the server and if the parameter &quot;iInstall&quot; is set to &quot;true&quot;, the installation is carried out on a Linux system with the &quot;get-apt&quot; command:</p>
+<pre class="prettyprint source"><code>    //Checking the installation of gs, tesseract and openoffice
+    let lInstData = await rtf2pdf.checkInstallation(true, &quot;de-DE&quot;)
+    console.log(`\nStart 'checkInstallation'`)
+    for (element in lInstData.data) {
+        console.log(`** ${element}: ${lInstData.data[element]}`)
+    }
+</code></pre>
+<p>The best way is to install the applications separately on the server.</p>
+<h2>5 Example</h2>
+<pre class="prettyprint source"><code>    //Checking the installation of gs, tesseract and openoffice
+    let lInstData = await rtf2pdf.checkInstallation(true, &quot;de-DE&quot;)
+    console.log(`\nStart 'checkInstallation'`)
+    for (element in lInstData.data) {
+        console.log(`** ${element}: ${lInstData.data[element]}`)
+    }
+
+    //Regsitrate new RTF template 
+    let lDoc1 = rtf2pdf.newTemplateByFile('test', 'test/Brief1.rtf');
+    if (lDoc1 && lDoc1.filename) {
+        console.log(`\nRTF Template file ${lDoc1.filename} found.`)
+    } else {
+        if (lDoc1) {
+            console.log(lDoc1.protocol)
+        } else {
+            console.log(`RTF Template document not found.`)
+        }
+        return;
+    }
+
+    //Create a correspondence as a new document for an RTF template 
+    let lDoc2 = await rtf2pdf.createDocAsCorrespondence('de-DE', 'test',
+        {
+            &quot;name&quot;: {
+                &quot;vorname&quot;: &quot;Hans-Joachim&quot;,
+                &quot;nachname&quot;: &quot;Lüdenscheid&quot;,
+                &quot;strasse&quot;: &quot;An der großen Brücke&quot;,
+                &quot;hnr&quot;: &quot;192a&quot;,
+                &quot;telnr&quot;: &quot;+49 151 99886677&quot;,
+                &quot;email&quot;: &quot;hjo.luedie@mac.com&quot;
+            },
+            &quot;to&quot;: {
+                &quot;titel&quot;: &quot;Herr&quot;,
+                &quot;name1&quot;: &quot;Hans Müller&quot;,
+                &quot;strasse&quot;: &quot;Unter den Eichen&quot;,
+                &quot;hnr&quot;: &quot;142&quot;,
+                &quot;plz&quot;: &quot;14163&quot;,
+                &quot;ort&quot;: &quot;Berlin&quot;,
+                &quot;anrede&quot;: &quot;Sehr geehrter Herr Müller&quot;
+            },
+            &quot;leistung&quot;: [
+                { &quot;nr&quot;: 100, &quot;bezeichnung&quot;: &quot;Haselnüsse&quot;, &quot;preis&quot;: 4.50 },
+                { &quot;nr&quot;: 101, &quot;bezeichnung&quot;: &quot;Sonderzeichen €¢¥£µ©®§&quot;, &quot;preis&quot;: 6.75 }
+            ],
+            &quot;auftrag&quot;: {
+                &quot;datum&quot;: new Date()
+            }
+        }
+    )
+
+    //Generate a PDF document from RTF document
+    if (lDoc2 && lDoc2.body) {
+        console.log(`\nRTF document subject ${lDoc2.subject} created.\n`)
+        lDoc2.protocol.forEach((text) => {
+            console.log('** '+text)
+        })
+        let lDoc3 = await rtf2pdf.convertRtfToPDF(lDoc2, true)
+        if (lDoc3 && lDoc3.filename) {
+            console.log(`\nPDF document ${lDoc3.filename} created.\n`)
+
+            lDoc2.checkIn() //&lt;-- delete temp file 
+            lDoc3.checkIn() //&lt;-- delete temp file
+        } else {
+            if (lDoc3) {
+                console.log(lDoc3.protocol)
+            } else {
+                console.log(`PDF document not created.`)
+            }
+        }
+
+    } else {
+        if (lDoc2) {
+            console.log(lDoc2.protocol)
+        } else {
+            console.log(`RTF document not created.`)
+        }
+    }
+
+    //Create a PDF document
+    let lDoc4 = new Document({ subject: &quot;test PDF to Text&quot;, type: &quot;PDF&quot;, filename: &quot;test/Rechnung1.PDF&quot;, langu: 'de-DE' })
+    //convert the PDF to text using tesseract 
+    await lDoc4.convertPDFToTextBody();
+    console.log(`PDF document ${lDoc4.filename} converts to text`)
+    lDoc4.protocol.forEach((text) => {
+        console.log(text)
+    })
+
+</code></pre></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-rtf2pdf.html">rtf2pdf</a></li></ul><h3>Classes</h3><ul><li><a href="module-rtf2pdf-Document.html">Document</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Feb 08 2022 20:49:30 GMT+0100 (Mitteleuropäische Normalzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
