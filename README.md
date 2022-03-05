@@ -77,7 +77,7 @@ Correspondences can then be created with the template. For this purpose, the dat
     )
 ```
 
-### 1.5 Variablen im RTF Template
+### 1.5 Variables in RTF template
 The variables in the RTF template must have the following notation:
 
 ### Fields
@@ -110,7 +110,7 @@ In case of an error, check the spelling of the variable, delete it completely if
 - create an RTF correspondence from a template and data (Json)
 - create a PDF from an RTF file (via OpenOffice as a batch)
 
-## 3. PDF Dateien 
+## 3. PDF files 
 - extract the text from a PDF
 -- if the PDF contains text, this text will be extracted directly.
 -- if the PDF is a scanned text, the JPG of each page will be 
