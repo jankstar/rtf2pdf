@@ -232,7 +232,7 @@ The best way is to install the applications separately on the server.
         }
     }
 
-    //Create a PDF document
+    //Create a PDF document - for this test the file Rechnung1.PDF must be under ./test
     let lDoc4 = new Document({ subject: "test PDF to Text", type: "PDF", filename: "test/Rechnung1.PDF", langu: 'de-DE' })
     //convert the PDF to text using tesseract 
     await lDoc4.convertPDFToTextBody();
