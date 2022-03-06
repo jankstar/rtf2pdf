@@ -592,7 +592,7 @@ const rtf2pdf = (() => {
                 me.protocol.push(`Error: ${err.message}`);
                 console.log(err.message)
             }
-            return this
+            return this.body
         }
 
 
