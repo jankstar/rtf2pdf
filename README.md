@@ -114,7 +114,7 @@ In case of an error, check the spelling of the variable, delete it completely if
 - extract the text from a PDF
 -- if the PDF contains text, this text will be extracted directly.
 -- if the PDF is a scanned text, the JPG of each page will be 
-   extracted, converted to a TIFF (via ghostscript as a batch) and then
+   extracted, converted to a TIFF (via ghostscript as a batch) and
    then converted to text via Tesseract OCR
 - convert the file from/to base64 
 
