@@ -342,8 +342,26 @@ const rtf2pdf = (() => {
         /**
          * Create a document
          * @param {*} value is a structure of the fields of a document
-         * {id, date, subject, status, task, in_use, filename, file_extension, type, template, 
-         *  data, info, metadata, cathegory, langu, num_page, body, base64, protocol }
+         * id
+         * date
+         * subject
+         * status
+         * task
+         * in_use
+         * filename
+         * file_extension
+         * type
+         * root_of
+         * template
+         * data
+         * info
+         * metadata
+         * cathegory
+         * langu
+         * num_page
+         * body
+         * base64
+         * protocol
          */
         constructor(value) {
             var now = new Date();
@@ -357,6 +375,11 @@ const rtf2pdf = (() => {
             this.filename = value.filename || ""
             this.file_extension = path.extname(this.filename.toLowerCase()) || ""
             this.type = value.type || ""
+            if (!this.type) {
+                this.type = this.file_extension.replaceAll(/\./g,'') //clear all points
+            }
+            this.type = this.type.toUpperCase()
+            this.root_of = value.root_of || ""
             this.template = value.template || ""
             this.data = value.data || {}
             this.info = value.info || {}
@@ -369,7 +392,7 @@ const rtf2pdf = (() => {
             this.base64 = value.base64 || ""
             //
             this.protocol = []
-            this.isFile = false || (this.filename != '');
+            this.is_file = false || (this.filename != '');
         }
 
         setValue(value) {
@@ -382,6 +405,8 @@ const rtf2pdf = (() => {
             this.in_use = value.in_use || this.in_use
             this.filename = value.filename || this.filename
             this.type = value.type || this.type
+            this.type = this.type.toUpperCase()
+            this.root_of = value.root_of || this.root_of
             this.template = value.template || this.template
             this.data = value.data || this.data
             this.info = value.info || this.info
@@ -392,7 +417,7 @@ const rtf2pdf = (() => {
             this.num_pages = value.num_pages || this.num_pages
             this.body = value.body || this.body
             this.base64 = value.base64 || this.base64
-            this.isFile = false || (this.filename != '');
+            this.is_file = false || (this.filename != '');
         }
 
         /**
