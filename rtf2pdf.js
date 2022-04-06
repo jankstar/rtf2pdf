@@ -786,9 +786,9 @@ const rtf2pdf = (() => {
         /**
          * Supplies the data for a template by name (template) as string
          * @param {String} iName Template name
-         * @returns {*}  { name: String, filename: String, data: String, error: Error }
+         * @returns {*}  { doc: Document, error: Error }
          */
-        async getTemplateData(iName) {
+        async getTemplate(iName) {
             let lDoc = undefined;
             try {
                 lDoc = rtf2pdf.findDocBySubject(iName, 'RTF', iName)
@@ -797,9 +797,9 @@ const rtf2pdf = (() => {
                     if (!lDoc.filename) { throw Error(`Template ${iName} cannot be loaded.`) }
                     lDoc.body = await fs.readFile(lDoc.filename, 'utf-8');
                 }
-                return { name: lDoc.subject, filename: lDoc.filename, data: lDoc.body, error: undefined };
+                return { doc: lDoc, error: undefined };
             } catch (err) {
-                return { name: iName, filename: '', data: '', error: err }
+                return { doc: undefined, error: err }
             }
         },
 
@@ -846,18 +846,20 @@ const rtf2pdf = (() => {
             let lDoc = new Document({ subject: `Correspondence of template ${iTemplate}`, template: iTemplate, task: 'Create_Correspondence' });
             lDoc.protocol.push(`Start 'createDocAsCorrespondence' with template ${iTemplate}`)
             try {
-                let { data: data, error: err } = await this.getTemplateData(iTemplate);
-                if (err) {
+                let { doc: lTemplate, error: err } = await this.getTemplate(iTemplate);
+                if (err || !lTemplate || !lTemplate.body) {
+                    err = err || {}
+                    err.message = err.message || 'template not found'
                     console.log(err)
                     lDoc.protocol.push(`Error: ${err.message}`)
                     return lDoc;
                 }
 
-                let elements = _createElementsFromRTF(data);
+                let elements = _createElementsFromRTF(lTemplate.body);
 
                 //console.log(elements);
                 //Replace fields
-                lDoc.body = _replaceVarInRTF(iLangu, iVar, data, elements, undefined, lDoc.protocol);
+                lDoc.body = _replaceVarInRTF(iLangu, iVar, lTemplate.body, elements, undefined, lDoc.protocol);
                 lDoc.protocol.push(`Correspondence created.`)
                 lDoc.type = 'RTF';
                 return lDoc;
